@@ -16,7 +16,7 @@ import {
   Loader2,
   LogIn,
   LucideIcon,
-  LucideProps,
+  LucideProps, MonitorSpeaker,
   Moon,
   MoreVertical,
   Pizza,
@@ -60,6 +60,7 @@ export const Icons = {
   sun: SunMedium,
   moon: Moon,
   laptop: Laptop,
+  device: MonitorSpeaker,
   gitHub: ({ ...props }: LucideProps) => (
     <svg
       aria-hidden="true"

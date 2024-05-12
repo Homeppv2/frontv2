@@ -148,4 +148,10 @@ export const navItems: NavItem[] = [
     icon: "login",
     label: "login",
   },
+  {
+    title: "Devices",
+    href: "/dashboard/devices",
+    icon: "device",
+    label: "devices",
+  },
 ];
