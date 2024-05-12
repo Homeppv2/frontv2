@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 
-
 const URL_WS = 'ws://95.163.229.198:8001/login';
 
 type Message = {
