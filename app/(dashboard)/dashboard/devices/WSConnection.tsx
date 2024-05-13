@@ -1,34 +1,71 @@
+"use client";
+
 import React, { useEffect, useState } from 'react';
 
 const URL_WS = 'ws://95.163.229.198:8001/login';
 
-type Message = {
-    ContollersEnviromentMessangesData: {
-        type: number;
-        number: number;
-        status: number;
-        charge: number;
-        temperature_MK: number;
-        data: string;
-        controlerenviroment: {
-            temperature: number;
-            humidity: number;
-            pressure: number;
-            voc: number;
-            gas1: number;
-            gas2: number;
-            gas3: number;
-            pm1: number;
-            pm25: number;
-            pm10: number;
-            fire: number;
-            smoke: number;
-        };
+type ControllerLeakMessage = {
+    type: number;
+    number: number;
+    status: number;
+    charge: number;
+    temperature_MK: number;
+    data: string;
+    controlerleack: {
+        leack: number;
     };
 };
 
+type ContollersEnviromentMessangesData = {
+    type: number;
+    number: number;
+    status: number;
+    charge: number;
+    temperature_MK: number;
+    data: string;
+    controlerenviroment: {
+        temperature: number;
+        humidity: number;
+        pressure: number;
+        voc: number;
+        gas1: number;
+        gas2: number;
+        gas3: number;
+        pm1: number;
+        pm25: number;
+        pm10: number;
+        fire: number;
+        smoke: number;
+    };
+};
+
+type ParsedMessage = {
+    id: number;
+    rng: {
+        from: number;
+        to: number;
+        count: number;
+    };
+    msgs: {
+        ContollersLeackMessangesData?: ControllerLeakMessage;
+        ContollersEnviromentMessangesData?: ContollersEnviromentMessangesData;
+    }[];
+};
+
 export const WSConnection = () => {
-    const [messages, setMessages] = useState<Message[]>([]);
+    const [leackValue, setLeackValue] = useState<number | null>(null);
+    const [temperature, setTemperature] = useState<number | null>(null);
+    const [humidity, setHumidity] = useState<number | null>(null);
+    const [pressure, setPressure] = useState<number | null>(null);
+    const [voc, setVoc] = useState<number | null>(null);
+    const [gas1, setGas1] = useState<number | null>(null);
+    const [gas2, setGas2] = useState<number | null>(null);
+    const [gas3, setGas3] = useState<number | null>(null);
+    const [pm1, setPM1] = useState<number | null>(null);
+    const [pm25, setPM25] = useState<number | null>(null);
+    const [pm10, setPM10] = useState<number | null>(null);
+    const [fire, setFire] = useState<number | null>(null);
+    const [smoke, setSmoke] = useState<number | null>(null);
 
     useEffect(() => {
         const wsRun = new WebSocket(URL_WS);
@@ -43,9 +80,29 @@ export const WSConnection = () => {
 
         wsRun.onmessage = function (event) {
             console.log('Received message:', event.data);
-            const parsedData = JSON.parse(event.data);
-            console.log('Parsed data:', parsedData);
-            setMessages(parsedData.msgs);
+            const parsedData: ParsedMessage = JSON.parse(event.data);
+
+            if (parsedData.msgs && parsedData.msgs.length > 0) {
+                const leackMessage = parsedData.msgs[0].ContollersLeackMessangesData;
+                if (leackMessage) {
+                    setLeackValue(leackMessage.controlerleack.leack);
+                }
+                const enviromentMessage = parsedData.msgs[0].ContollersEnviromentMessangesData;
+                if (enviromentMessage) {
+                    setTemperature(enviromentMessage.controlerenviroment.temperature);
+                    setHumidity(enviromentMessage.controlerenviroment.humidity);
+                    setPressure(enviromentMessage.controlerenviroment.pressure);
+                    setVoc(enviromentMessage.controlerenviroment.voc);
+                    setGas1(enviromentMessage.controlerenviroment.gas1);
+                    setGas2(enviromentMessage.controlerenviroment.gas2);
+                    setGas3(enviromentMessage.controlerenviroment.gas3);
+                    setPM1(enviromentMessage.controlerenviroment.pm1);
+                    setPM25(enviromentMessage.controlerenviroment.pm25);
+                    setPM10(enviromentMessage.controlerenviroment.pm10);
+                    setFire(enviromentMessage.controlerenviroment.fire);
+                    setSmoke(enviromentMessage.controlerenviroment.smoke);
+                }
+            }
         };
 
         wsRun.onclose = function () {
@@ -59,30 +116,23 @@ export const WSConnection = () => {
 
     return (
         <div>
-            <ul>
-                {messages && messages.length > 0 && messages.map((msg, index) => (
-                    <li key={index}>
-                        <div>
-                            <h4>Controller Environment:</h4>
-                            <p>Temperature: {msg.ContollersEnviromentMessangesData.controlerenviroment.temperature}</p>
-                            <p>Humidity: {msg.ContollersEnviromentMessangesData.controlerenviroment.humidity}</p>
-                            <p>Pressure: {msg.ContollersEnviromentMessangesData.controlerenviroment.pressure}</p>
-                            <p>VOC: {msg.ContollersEnviromentMessangesData.controlerenviroment.voc}</p>
-                            <p>gas1: {msg.ContollersEnviromentMessangesData.controlerenviroment.gas1}</p>
-                            <p>gas2: {msg.ContollersEnviromentMessangesData.controlerenviroment.gas2}</p>
-                            <p>gas3: {msg.ContollersEnviromentMessangesData.controlerenviroment.gas3}</p>
-                            <p>pm1: {msg.ContollersEnviromentMessangesData.controlerenviroment.pm1}</p>
-                            <p>pm25: {msg.ContollersEnviromentMessangesData.controlerenviroment.pm25}</p>
-                            <p>fire: {msg.ContollersEnviromentMessangesData.controlerenviroment.fire}</p>
-                            <p>smoke: {msg.ContollersEnviromentMessangesData.controlerenviroment.smoke}</p>
-                            {/* Add other values as needed */}
-                        </div>
-                    </li>
-                ))}
-            </ul>
+            {(leackValue !== null || temperature !== null) && (
+                <div>
+                    {leackValue !== null && <p>Leak: {leackValue}</p>}
+                    {temperature !== null && <p>Temperature: {temperature}</p>}
+                    {humidity !== null && <p>Humidity: {humidity}</p>}
+                    {pressure !== null && <p>Pressure: {pressure}</p>}
+                    {voc !== null && <p>Voc: {voc}</p>}
+                    {gas1 !== null && <p>Gas1: {gas1}</p>}
+                    {gas2 !== null && <p>Gas2: {gas2}</p>}
+                    {gas3 !== null && <p>Gas3: {gas3}</p>}
+                    {pm1 !== null && <p>PM1: {pm1}</p>}
+                    {pm25 !== null && <p>PM25: {pm25}</p>}
+                    {pm10 !== null && <p>PM10: {pm10}</p>}
+                    {fire !== null && <p>Fire: {fire}</p>}
+                    {smoke !== null && <p>Smoke: {smoke}</p>}
+                </div>
+            )}
         </div>
     );
 };
-
-// Добавьте маркировку "use client"
-export const useClient = true;
