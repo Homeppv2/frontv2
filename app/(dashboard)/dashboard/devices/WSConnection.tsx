@@ -4,6 +4,22 @@ import React, { useEffect, useState } from 'react';
 
 const URL_WS = 'ws://95.163.229.198:8001/login';
 
+type ContollersModuleMessangesData = {
+    type: number;
+    number: number;
+    status: number;
+    charge: number ;
+    temperature_MK: number;
+    data: string;
+    controlermodule: {
+        temperature: number;
+        humidity: number;
+        pressure: number;
+        gas: number;
+
+    };
+};
+
 type ControllerLeakMessage = {
     type: number;
     number: number;
@@ -49,6 +65,7 @@ type ParsedMessage = {
     msgs: {
         ContollersLeackMessangesData?: ControllerLeakMessage;
         ContollersEnviromentMessangesData?: ContollersEnviromentMessangesData;
+        ContollersModuleMessangesData?: ContollersModuleMessangesData;
     }[];
 };
 
@@ -66,6 +83,10 @@ export const WSConnection = () => {
     const [pm10, setPM10] = useState<number | null>(null);
     const [fire, setFire] = useState<number | null>(null);
     const [smoke, setSmoke] = useState<number | null>(null);
+    const [temperature_md, setTemperature_md] = useState<number | null>(null);
+    const [humidity_md, setHumidity_md] = useState<number | null>(null);
+    const [pressure_md, setPressure_md] = useState<number | null>(null);
+    const [gas_md, setGas_md] = useState<number | null>(null);
 
     useEffect(() => {
         const wsRun = new WebSocket(URL_WS);
@@ -102,9 +123,15 @@ export const WSConnection = () => {
                     setFire(enviromentMessage.controlerenviroment.fire);
                     setSmoke(enviromentMessage.controlerenviroment.smoke);
                 }
+                const controlerModule = parsedData.msgs[0].ContollersModuleMessangesData;
+                if (controlerModule) {
+                    setTemperature_md(controlerModule.controlermodule.temperature);
+                    setHumidity_md(controlerModule.controlermodule.temperature);
+                    setPressure_md(controlerModule.controlermodule.pressure);
+                    setGas_md(controlerModule.controlermodule.gas);
+                }
             }
         };
-
         wsRun.onclose = function () {
             console.log('WebSocket disconnected');
         };
@@ -116,7 +143,7 @@ export const WSConnection = () => {
 
     return (
         <div>
-            {(leackValue !== null || temperature !== null) && (
+            {(leackValue !== null || temperature !== null || humidity !== null || pressure !== null || voc !== null || gas1 !== null || gas2 !== null || gas3 !== null || pm1 !== null || pm25 !== null || pm10!== null || fire !== null || smoke !== null ) && (
                 <div>
                     {leackValue !== null && <p>Leak: {leackValue}</p>}
                     {temperature !== null && <p>Temperature: {temperature}</p>}
@@ -131,6 +158,10 @@ export const WSConnection = () => {
                     {pm10 !== null && <p>PM10: {pm10}</p>}
                     {fire !== null && <p>Fire: {fire}</p>}
                     {smoke !== null && <p>Smoke: {smoke}</p>}
+                    {temperature_md !== null && <p>Temperature_md: {temperature_md}</p>}
+                    {humidity_md !== null && <p>Humidity_md: {humidity_md}</p>}
+                    {pressure_md !== null && <p>Pressure_md: {pressure_md}</p>}
+                    {gas_md !== null && <p>Gas_md: {gas_md}</p>}
                 </div>
             )}
         </div>
