@@ -45,7 +45,7 @@ export default function page() {
                   stroke="currentColor"
                   stroke-width="2"
                   stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeLinejoin="round"
                   className="lucide lucide-wind "
                 >
                   <path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2" />

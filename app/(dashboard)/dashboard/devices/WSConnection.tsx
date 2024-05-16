@@ -183,7 +183,7 @@ export default function WSConnection({
             stroke="currentColor"
             stroke-width="2"
             stroke-linecap="round"
-            stroke-linejoin="round"
+            strokeLinejoin="round"
             className="lucide lucide-component"
           >
             <path d="M5.5 8.5 9 12l-3.5 3.5L2 12l3.5-3.5Z" />
@@ -251,7 +251,7 @@ export default function WSConnection({
             stroke="currentColor"
             stroke-width="2"
             stroke-linecap="round"
-            stroke-linejoin="round"
+            strokeLinejoin="round"
             className="lucide lucide-droplets"
           >
             <path d="M7 16.3c2.2 0 4-1.83 4-4.05 0-1.16-.57-2.26-1.71-3.19S7.29 6.75 7 5.3c-.29 1.45-1.14 2.84-2.29 3.76S3 11.1 3 12.25c0 2.22 1.8 4.05 4 4.05z" />
